@@ -35,7 +35,7 @@ class DataGenerator:
             "..",
             "..",
             "data",
-            "nasdaq_adj_closing_prices.csv.gz",
+            "nasdaq_adj_closing_prices.csv",
         )
 
     def get_tickers(self, file_path: str) -> List[str]:
@@ -66,13 +66,13 @@ class DataGenerator:
             tickers (List[str]): List of tickers
 
         Returns:
-            Pandas dataframe containing historical price data
+            Pandas dataframe containing historical monthly price data
         """
 
         price_df = yf.download(
             tickers=tickers,
             period="max",
-            interval="1d",
+            interval="1mo",
         )
 
         return price_df
@@ -84,4 +84,4 @@ class DataGenerator:
 
         tickers = self.get_tickers(self.input_path)
         price_df = self.get_historical_price_data(tickers)
-        price_df["Adj Close"].to_csv(self.output_path, compression="gzip")
+        price_df["Adj Close"].to_csv(self.output_path)
