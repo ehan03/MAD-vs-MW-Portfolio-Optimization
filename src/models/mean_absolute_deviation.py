@@ -5,31 +5,29 @@
 # third party imports
 import cvxpy as cp
 import numpy as np
+import pandas as pd
 
 # local imports
 from src.models.base import BaseModel
 
 
 class MADModel(BaseModel):
-    """
-    Mean absolute deviation model
-    """
+    """Mean absolute deviation model"""
 
-    def find_optimal_weights(self, mean_returns: np.ndarray) -> np.ndarray:
+    def solve(self, mean_returns: pd.Series) -> np.ndarray:
         """
-        Find optimal weights
+        Solve MAD model
 
         Parameters:
-            mean_returns (np.ndarray): Mean returns
+            mean_returns (pd.Series): Mean returns
 
         Returns:
             NumPy array of optimal weights
         """
 
-        T, n = self.returns_data.loc[: self.split_date].shape
-        a = (self.returns_data.loc[: self.split_date] - mean_returns).values
-        w = cp.Variable(n)
-        y = cp.Variable(T)
+        a = (self.returns_data - mean_returns).values
+        w = cp.Variable(self.N)
+        y = cp.Variable(self.T)
 
         constraints = [
             y + a @ w >= 0,
@@ -39,7 +37,7 @@ class MADModel(BaseModel):
             w >= 0,
         ]
 
-        objective = cp.Minimize(cp.sum(y) / T)
+        objective = cp.Minimize(cp.sum(y) / self.T)
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
@@ -54,6 +52,6 @@ class MADModel(BaseModel):
         """
 
         mean_returns = self.estimate_mean_returns()
-        weights = self.find_optimal_weights(mean_returns)
+        weights = self.solve(mean_returns)
 
         return weights
