@@ -37,7 +37,7 @@ class MarkowitzModel(BaseModel):
         Estimate covariance matrix
 
         Returns:
-            NumPy array of covariance matrix
+            DataFrame of covariance matrix
         """
 
         cov_matrix = self.returns_data.cov()
@@ -52,7 +52,7 @@ class MarkowitzModel(BaseModel):
             mean_returns (pd.Series): Mean returns
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L2)
         """
 
         cov_matrix = self.estimate_cov_matrix()
@@ -81,7 +81,7 @@ class MarkowitzModel(BaseModel):
             epsilon (float): Perturbation parameter, how much to shift the diagonal
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L2)
         """
 
         assert epsilon > 0
@@ -109,7 +109,7 @@ class MarkowitzModel(BaseModel):
             mean_returns (pd.Series): Mean returns
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L2)
         """
 
         a = (self.returns_data - mean_returns).values
@@ -134,7 +134,7 @@ class MarkowitzModel(BaseModel):
         Find optimal weights via Markowitz model
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L2)
         """
 
         mean_returns = self.estimate_mean_returns()

@@ -21,7 +21,7 @@ class MADModel(BaseModel):
             mean_returns (pd.Series): Mean returns
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L1)
         """
 
         a = (self.returns_data - mean_returns).values
@@ -47,7 +47,7 @@ class MADModel(BaseModel):
         Find optimal weights
 
         Returns:
-            NumPy array of optimal weights
+            Tuple of optimal weights, expected return, and risk (L1)
         """
 
         mean_returns = self.estimate_mean_returns()
