@@ -23,7 +23,7 @@ def simulate_returns(distribution: str, n_assets: int, n_obs: int) -> pd.DataFra
     if distribution == "normal":
         returns_vec = np.random.normal(0, 1, size=(n_assets, n_obs))
     else:
-        returns_vec = np.random.lognormal(0, 0.4, size=(n_assets, n_obs)) - 1
+        returns_vec = np.random.lognormal(0, 1, size=(n_assets, n_obs)) - 1
 
     return pd.DataFrame(returns_vec.T)
 
