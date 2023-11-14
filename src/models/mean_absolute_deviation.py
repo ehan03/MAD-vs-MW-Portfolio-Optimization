@@ -1,6 +1,5 @@
-"""Mean absolute deviation model"""
-
 # standard library imports
+from typing import Tuple
 
 # third party imports
 import cvxpy as cp
@@ -12,9 +11,9 @@ from src.models.base import BaseModel
 
 
 class MADModel(BaseModel):
-    """Mean absolute deviation model"""
+    """Class for the mean absolute deviation model"""
 
-    def solve(self, mean_returns: pd.Series) -> np.ndarray:
+    def solve(self, mean_returns: pd.Series) -> Tuple[np.ndarray, float, float]:
         """
         Solve MAD model
 
@@ -41,9 +40,9 @@ class MADModel(BaseModel):
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
-        return w.value
+        return w.value, w.value @ mean_returns, problem.value
 
-    def __call__(self) -> np.ndarray:
+    def __call__(self) -> Tuple[np.ndarray, float, float]:
         """
         Find optimal weights
 
@@ -52,6 +51,6 @@ class MADModel(BaseModel):
         """
 
         mean_returns = self.estimate_mean_returns()
-        weights = self.solve(mean_returns)
+        weights, expected_return, risk = self.solve(mean_returns)
 
-        return weights
+        return weights, expected_return, risk

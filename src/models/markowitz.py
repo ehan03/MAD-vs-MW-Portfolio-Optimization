@@ -1,6 +1,5 @@
-"""Markowitz model"""
-
 # standard library imports
+from typing import Tuple
 
 # third party imports
 import cvxpy as cp
@@ -12,7 +11,7 @@ from src.models.base import BaseModel
 
 
 class MarkowitzModel(BaseModel):
-    """Markowitz model"""
+    """Class for the Markowitz model"""
 
     def __init__(
         self,
@@ -45,7 +44,7 @@ class MarkowitzModel(BaseModel):
 
         return cov_matrix
 
-    def solve_regular(self, mean_returns: pd.Series) -> np.ndarray:
+    def solve_regular(self, mean_returns: pd.Series) -> Tuple[np.ndarray, float, float]:
         """
         Solve Markowitz model with regular covariance matrix
 
@@ -69,11 +68,11 @@ class MarkowitzModel(BaseModel):
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
-        return w.value
+        return w.value, w.value @ mean_returns, np.sqrt(problem.value)
 
     def solve_perturbed(
         self, mean_returns: pd.Series, epsilon: float = 1e-8
-    ) -> np.ndarray:
+    ) -> Tuple[np.ndarray, float, float]:
         """
         Solve Markowitz model with perturbed covariance matrix
 
@@ -100,7 +99,7 @@ class MarkowitzModel(BaseModel):
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
-        return w.value
+        return w.value, w.value @ mean_returns, np.sqrt(problem.value)
 
     def solve_reformulation(self, mean_returns: pd.Series) -> np.ndarray:
         """
@@ -128,9 +127,9 @@ class MarkowitzModel(BaseModel):
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
-        return w.value
+        return w.value, w.value @ mean_returns, np.sqrt(problem.value)
 
-    def __call__(self) -> np.ndarray:
+    def __call__(self) -> Tuple[np.ndarray, float, float]:
         """
         Find optimal weights via Markowitz model
 
@@ -141,10 +140,10 @@ class MarkowitzModel(BaseModel):
         mean_returns = self.estimate_mean_returns()
 
         if self.covariance_method == "regular":
-            weights = self.solve_regular(mean_returns)
+            weights, expected_return, risk = self.solve_regular(mean_returns)
         elif self.covariance_method == "perturbed":
-            weights = self.solve_perturbed(mean_returns)
+            weights, expected_return, risk = self.solve_perturbed(mean_returns)
         elif self.covariance_method == "reformulation":
-            weights = self.solve_reformulation(mean_returns)
+            weights, expected_return, risk = self.solve_reformulation(mean_returns)
 
-        return weights
+        return weights, expected_return, risk

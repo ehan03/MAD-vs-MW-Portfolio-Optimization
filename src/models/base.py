@@ -1,5 +1,3 @@
-"""Base portfolio optimization model class"""
-
 # standard library imports
 
 # third party imports
