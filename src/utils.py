@@ -3,6 +3,7 @@
 # third party imports
 import numpy as np
 import pandas as pd
+from scipy.stats import random_correlation
 
 # local imports
 
@@ -20,12 +21,18 @@ def simulate_returns(distribution: str, n_assets: int, n_obs: int) -> pd.DataFra
 
     assert distribution in ["normal", "lognormal"]
 
-    if distribution == "normal":
-        returns_vec = np.random.normal(0, 1, size=(n_assets, n_obs))
-    else:
-        returns_vec = np.random.lognormal(0, 1, size=(n_assets, n_obs)) - 1
+    np.random.seed(431)
+    mean_returns = np.zeros(n_assets)
+    cov_matrix = np.eye(n_assets)
 
-    return pd.DataFrame(returns_vec.T)
+    # Generate returns data
+    if distribution == "normal":
+        returns_vec = np.random.multivariate_normal(mean_returns, cov_matrix, n_obs)
+    else:
+        returns_vec = np.random.multivariate_normal(mean_returns, cov_matrix, n_obs)
+        returns_vec = np.exp(returns_vec) - 1
+
+    return pd.DataFrame(returns_vec)
 
 
 def generate_random_weights(n_assets: int) -> np.ndarray:

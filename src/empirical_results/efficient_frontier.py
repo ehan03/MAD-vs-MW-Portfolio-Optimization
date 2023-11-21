@@ -36,14 +36,15 @@ class EfficientFrontier:
 
         assert model in ["markowitz", "mad"]
 
-        mean_returns = returns_data.mean()
-        cov_matrix = returns_data.cov()
-
         risk_label = (
             "Standard Deviation" if model == "markowitz" else "Mean Absolute Deviation"
         )
 
+        mean_returns = returns_data.mean()
+        cov_matrix = returns_data.cov()
+
         # Generate random portfolios
+        np.random.seed(431)
         random_expected_returns = []
         random_risks = []
         for _ in range(self.n_portfolios):
@@ -64,7 +65,7 @@ class EfficientFrontier:
         min_returns = np.linspace(
             random_expected_returns[np.argmin(random_risks)],
             np.max(random_expected_returns),
-            20,
+            50,
         )
         for min_return in min_returns:
             if model == "markowitz":
@@ -89,7 +90,7 @@ class EfficientFrontier:
             linewidth=3,
             label="Efficient Frontier",
         )
-        plt.xlabel("Expected Return (%)")
+        plt.xlabel("Expected Return")
         plt.ylabel(risk_label)
         plt.legend(loc="upper left")
         plt.show()
@@ -122,7 +123,7 @@ class EfficientFrontier:
         min_returns = np.linspace(
             random_expected_returns[np.argmin(random_risks)],
             np.max(random_expected_returns),
-            20,
+            100,
         )
         for min_return in min_returns:
             mw_model = MarkowitzModel(returns_data, min_return, "regular")
@@ -156,7 +157,7 @@ class EfficientFrontier:
             linewidth=3,
             label="MAD",
         )
-        plt.xlabel("Expected Return (%)")
+        plt.xlabel("Expected Return")
         plt.ylabel("Standard Deviation")
         plt.legend(loc="upper left")
         plt.show()
