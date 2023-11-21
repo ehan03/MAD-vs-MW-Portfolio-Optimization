@@ -25,7 +25,7 @@ class MarkowitzModel(BaseModel):
         Attributes:
             returns_data (pd.DataFrame): Returns data
             min_return (float): Minimum return for optimization formulation
-            use_covariance (bool): Whether to use covariance matrix or not
+            covariance_method (str): Method for estimating covariance matrix
         """
 
         super().__init__(returns_data, min_return)
@@ -71,7 +71,7 @@ class MarkowitzModel(BaseModel):
         return w.value, w.value @ mean_returns, np.sqrt(problem.value)
 
     def solve_perturbed(
-        self, mean_returns: pd.Series, epsilon: float = 1e-8
+        self, mean_returns: pd.Series, epsilon: float = 1e-6
     ) -> Tuple[np.ndarray, float, float]:
         """
         Solve Markowitz model with perturbed covariance matrix

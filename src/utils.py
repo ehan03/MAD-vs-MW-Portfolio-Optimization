@@ -3,12 +3,13 @@
 # third party imports
 import numpy as np
 import pandas as pd
-from scipy.stats import random_correlation
 
 # local imports
 
 
-def simulate_returns(distribution: str, n_assets: int, n_obs: int) -> pd.DataFrame:
+def simulate_returns(
+    distribution: str, n_assets: int, n_obs: int, random_cov: bool = False
+) -> pd.DataFrame:
     """
     Simulate returns data from a given distribution
 
@@ -22,8 +23,14 @@ def simulate_returns(distribution: str, n_assets: int, n_obs: int) -> pd.DataFra
     assert distribution in ["normal", "lognormal"]
 
     np.random.seed(431)
+
     mean_returns = np.zeros(n_assets)
-    cov_matrix = np.eye(n_assets)
+
+    if not random_cov:
+        cov_matrix = np.eye(n_assets)
+    else:
+        A = np.random.random((n_assets, n_assets))
+        cov_matrix = A.T @ A
 
     # Generate returns data
     if distribution == "normal":
